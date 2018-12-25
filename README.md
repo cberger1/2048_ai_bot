@@ -1,2 +1,2 @@
 # 2048_ai_bot
-2048 Game to practice ai in python
+2048 game to practice ai in python
