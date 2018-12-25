@@ -6,11 +6,10 @@ import time
 moves = [0,1,2,3]
 gameData = [[],[]]
 data = []
-global highestNum
 highestNum = 2
 
 def newBoard():
-    board = [[0,0,0,0],
+    board = [[2,4,8,16],
              [0,0,0,0],
              [0,0,0,0],
              [0,0,0,0]]
@@ -60,7 +59,7 @@ def combineNumToTheRight(board):
                     highestNum = board[row][column]
     return board
 
-def moveToTheRight(board):
+def moveRight(board):
     board = moveEverythingToTheRight(board)
     board = combineNumToTheRight(board)
     board = moveEverythingToTheRight(board)
@@ -68,18 +67,18 @@ def moveToTheRight(board):
 
 def move(board, to):
     if to == 0:
-        board = moveToTheRight(board)
+        board = moveRight(board)
     elif to == 1:
         board = np.rot90(board, 3)
-        board = moveToTheRight(board)
+        board = moveRight(board)
         board = np.rot90(board)
     elif to == 2:
         board = np.fliplr(board)
-        board = moveToTheRight(board)
+        board = moveRight(board)
         board = np.fliplr(board)
     elif to == 3:
         board = np.rot90(board)
-        board = moveToTheRight(board)
+        board = moveRight(board)
         board = np.rot90(board, 3)
     else:
         print("ERROR: to must beequl to 0/1/2/3 (0 := right; 1 := up; 2 := left; 3 := down)")
@@ -92,36 +91,55 @@ def startGame():
         newNum(board)
     return board
 
+def isMovePossible(board, move):
+    movePoss = True
+    b = newBoard()
+    b = move(board, move)
+    if board == b:
+        movePoss = False
+    return movePoss
+
+def noPossibleMove(board):
+    noPossMove = False
+    if np.min(board) != 0:
+        possMoveCount = 0
+        for i in range(4):
+            if isMovePossible(board, i):
+                possMoveCount += 1
+        if possMoveCount == 0:
+            noPossMove = True
+    return noPossMove
+
 def randomPlay(board):
     m = random.randint(0,3)
     board = move(board, m)
     board = newNum(board)
     return board , m
 
-startTimer =time.clock()
-stats = []
-for j in range(10000):
-    highestNum = 2
-    i = 0
-    b = startGame()
-    gameData = [[],[]]
-    for i in range(20):
-        b, m = randomPlay(b)
-        gameData[0].append(b)
-        gameData[1].append(m)
-        i += 1
-        if highestNum == 32:
-            data.append(gameData)
-            stats.append(i)
-            break
-    if j % 1000 == 0:
-        print(j)
-
-stopTimer = time.clock()
-print("Time: ", round(stopTimer - startTimer), 2)
-print("Games who reached 32: ",len(stats))
-if len(stats) != 0:
-    print("Average move count: ",round(sum(stats)/len(stats), 2))
+##startTimer =time.clock()
+##stats = []
+##for j in range(10000):
+##    highestNum = 2
+##    i = 0
+##    b = startGame()
+##    gameData = [[],[]]
+##    for i in range(20):
+##        b, m = randomPlay(b)
+##        gameData[0].append(b)
+##        gameData[1].append(m)
+##        i += 1
+##        if highestNum == 32:
+##            data.append(gameData)
+##            stats.append(i)
+##            break
+##    if j % 1000 == 0:
+##        print(j)
+##
+##stopTimer = time.clock()
+##print("Time: ", stopTimer - startTimer)
+##print("Games who reached 32: ", len(stats))
+##if len(stats) != 0:
+##    print("Average move count: ", round(sum(stats) / len(stats), 2))
 
 
 
