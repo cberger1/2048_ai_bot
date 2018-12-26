@@ -6,8 +6,6 @@ RUN apt-get update
 RUN apt-get --yes install git-core
 # Set the working directory to /app
 WORKDIR /app
-# Copy the current directory contents into the container at /app
-# COPY requirements.txt /app
 # Clone the latest software and change directory
 RUN git clone https://github.com/cberger1/2048_ai_bot.git
 RUN cd 2048_ai_bot
