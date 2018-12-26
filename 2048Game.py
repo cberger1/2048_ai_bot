@@ -9,7 +9,7 @@ data = []
 highestNum = 2
 
 def newBoard():
-    board = [[2,4,8,16],
+    board = [[0,0,0,0],
              [0,0,0,0],
              [0,0,0,0],
              [0,0,0,0]]
@@ -91,11 +91,10 @@ def startGame():
         newNum(board)
     return board
 
-def isMovePossible(board, move):
+def isMovePossible(board, m):
     movePoss = True
-    b = newBoard()
-    b = move(board, move)
-    if board == b:
+    nb = move(board, m)
+    if board.all() == nb.all():
         movePoss = False
     return movePoss
 
@@ -116,30 +115,30 @@ def randomPlay(board):
     board = newNum(board)
     return board , m
 
-##startTimer =time.clock()
-##stats = []
-##for j in range(10000):
-##    highestNum = 2
-##    i = 0
-##    b = startGame()
-##    gameData = [[],[]]
-##    for i in range(20):
-##        b, m = randomPlay(b)
-##        gameData[0].append(b)
-##        gameData[1].append(m)
-##        i += 1
-##        if highestNum == 32:
-##            data.append(gameData)
-##            stats.append(i)
-##            break
-##    if j % 1000 == 0:
-##        print(j)
-##
-##stopTimer = time.clock()
-##print("Time: ", stopTimer - startTimer)
-##print("Games who reached 32: ", len(stats))
-##if len(stats) != 0:
-##    print("Average move count: ", round(sum(stats) / len(stats), 2))
+startTimer =time.clock()
+stats = []
+for j in range(10000):
+    highestNum = 2
+    moveCount = 0
+    b = startGame()
+    gameData = [[],[]]
+    for i in range(20):
+        b, m = randomPlay(b)
+        gameData[0].append(b.tolist())
+        gameData[1].append(m)
+        moveCount += 1
+        if highestNum == 32:
+            data.append(gameData)
+            stats.append(moveCount)
+            break
+    if j % 1000 == 0:
+        print(j)
+
+stopTimer = time.clock()
+print("Time: ", stopTimer - startTimer)
+print("Games who reached 32: ", len(stats))
+if len(stats) != 0:
+    print("Average move count: ", round(sum(stats) / len(stats), 2))
 
 
 
