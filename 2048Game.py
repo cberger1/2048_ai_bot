@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import time
+import json
 
 # 0 := right; 1 := up; 2 := left; 3 := down
 moves = [0,1,2,3]
@@ -117,17 +118,18 @@ def randomPlay(board):
 
 startTimer =time.clock()
 stats = []
-for j in range(10000):
+for j in range(1):
     highestNum = 2
     moveCount = 0
     b = startGame()
-    gameData = [[],[]]
+    gameData = [[b.tolist()],[]]
     for i in range(20):
         b, m = randomPlay(b)
         gameData[0].append(b.tolist())
         gameData[1].append(m)
         moveCount += 1
         if highestNum == 32:
+            gameData[0].pop(i)
             data.append(gameData)
             stats.append(moveCount)
             break
@@ -140,6 +142,12 @@ print("Games who reached 32: ", len(stats))
 if len(stats) != 0:
     print("Average move count: ", round(sum(stats) / len(stats), 2))
 
+dataTest = {
+    "board": gameData[0][0],
+    "moveToDo": gameData[1][0]
+}
 
+json_dataTest = json.dumps(dataTest)
+print(json_dataTest)
 
 
