@@ -1,12 +1,18 @@
 import random
 import numpy as np
 import time
+import boto3
+import json
+import decimal
 
 # 0 := right; 1 := up; 2 := left; 3 := down
 moves = [0,1,2,3]
 gameData = [[],[]]
 data = []
 highestNum = 2
+goal = 32
+numOfGames = 1000
+maxNumOfMovesToReachGoal = 20
 
 def newBoard():
     board = [[0,0,0,0],
@@ -115,30 +121,47 @@ def randomPlay(board):
     board = newNum(board)
     return board , m
 
-startTimer =time.clock()
-stats = []
-for j in range(10000):
-    highestNum = 2
-    moveCount = 0
-    b = startGame()
-    gameData = [[b.tolist()],[]]
-    for i in range(20):
-        b, m = randomPlay(b)
-        gameData[0].append(b.tolist())
-        gameData[1].append(m)
-        moveCount += 1
-        if highestNum == 32:
-            gameData[0].pop(i)
-            data.append(gameData)
-            stats.append(moveCount)
-            break
-    if j % 1000 == 0:
-        print(j)
+while True:
+    startTimer =time.clock()
+    stats = []
+    for j in range(numOfGames):
+        highestNum = 2
+        moveCount = 0
+        b = startGame()
+        gameData = [[b.tolist()],[]]
+        for i in range(maxNumOfMovesToReachGoal):
+            b, m = randomPlay(b)
+            gameData[0].append(b.tolist())
+            gameData[1].append(m)
+            moveCount += 1
+            if highestNum == goal:
+                gameData[0].pop(i)
+                data.append(gameData)
+                stats.append(moveCount)
+                break
+        if j % 1000 == 0:
+            print(j)
 
-stopTimer = time.clock()
-print("Time: ", stopTimer - startTimer)
-print("Games who reached 32: ", len(stats))
-if len(stats) != 0:
-    print("Average move count: ", round(sum(stats) / len(stats), 2))
+    stopTimer = time.clock()
+    print("Time: ", stopTimer - startTimer)
+    print("Games who reached ",goal,": ", len(stats))
+    if len(stats) != 0:
+        print("Average move count: ", round(sum(stats) / len(stats), 2))
+
+
+    # Asssume that the env variables AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are defined
+    # Get the service resource.
+    dynamodb = boto3.resource('dynamodb',region_name='us-west-2')
+    table = dynamodb.Table('game-samples')
+    #print(table.creation_date_time)
+
+    print("Writing data in db ...")
+    table.put_item(
+       Item={
+            'dataID': 'game_' + str(round(time.clock()*1000000000)),
+            'data': data
+
+        }
+    )
 
 
